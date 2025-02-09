@@ -3,21 +3,14 @@ import os
 from Theme_Classifier import ThemeClassifier
 
 
-# Function to validate save_path
-def validate_save_path(save_path):
-    if os.path.isdir(save_path):
-        return "The path should be a file, not a directory."
-    return save_path
 
 # Theme Classification Section
-def get_themes(theme_list_str, subtitles_file, save_path):
+def get_themes(theme_list_str, subtitles_path, save_path):
     theme_list = [theme.strip() for theme in theme_list_str.split(',')]  # Clean and split theme list
-    
-    # Save subtitles to a local file path if in Google Colab or local environment
-    if subtitles_file is not None:
-        subtitles_path = "/content/" + subtitles_file.name  # Default for Google Colab
-        with open(subtitles_path, "wb") as f:
-            f.write(subtitles_file.read())  # Save the uploaded subtitles locally
+
+    # Check if the subtitles file exists at the provided path
+    if not os.path.exists(subtitles_path):
+        return f"Error: Subtitles file does not exist at {subtitles_path}"
 
     # Instantiate the theme classifier
     theme_classifier = ThemeClassifier(theme_list)
@@ -38,10 +31,6 @@ def get_themes(theme_list_str, subtitles_file, save_path):
 
     # Save the output to a file (both Colab and local directory)
     if save_path:
-        # For Colab, save in Google Drive or local directory
-        if '/content/' in save_path:
-            # Google Colab: Saving directly to Google Drive (if mounted) or to content
-            save_path = os.path.join("/content", save_path)
         # Save the dataframe as CSV
         output_df.to_csv(save_path, index=False)
 
@@ -59,18 +48,18 @@ def main():
                     with gr.Column():  # Input functions
                         theme_list = gr.Textbox(label="Themes", placeholder="Comma separated list of themes (e.g. love, anger, happiness)")
                         
-                        # File upload for subtitles (this will work for both Colab and local)
-                        subtitles_file = gr.File(label="Upload Subtitles or Script File")
+                        # Textbox for subtitles path (user provides the path directly)
+                        subtitles_path = gr.Textbox(label="Subtitles Path", placeholder="Path to the subtitles or script file")
                         
-                        # Textbox for save path (can specify path for both Colab and local environment)
-                        save_path = gr.Textbox(label="Save Path", placeholder="Path to save the result (e.g. /content/ThemeResults/output.csv or ./output.csv)")
+                        # Textbox for save path (user provides where to save the results)
+                        save_path = gr.Textbox(label="Save Path", placeholder="Path to save the result (e.g. ./output.csv or /content/ThemeResults/output.csv)")
                         
                         # Add validation for save_path
-                        save_path.change(validate_save_path, inputs=[save_path], outputs=[save_path])
+                        save_path.change(inputs=[save_path], outputs=[save_path])
                         
                         get_themes_button = gr.Button("Get Themes")
                         # Train and get output
-                        get_themes_button.click(get_themes, inputs=[theme_list, subtitles_file, save_path], outputs=[plot])  # Call the function and update plot
+                        get_themes_button.click(get_themes, inputs=[theme_list, subtitles_path, save_path], outputs=[plot])  # Call the function and update plot
 
     # Launch the Gradio interface and allow sharing in Colab
     iface.launch(share=True, inline=False)  # 'inline=False' is important for Colab
