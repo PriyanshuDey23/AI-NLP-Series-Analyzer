@@ -2,7 +2,13 @@ import gradio as gr
 import os
 from Theme_Classifier import ThemeClassifier
 
-
+# Function to handle save path
+def handle_save_path(save_path):
+    # If the save_path is a directory, append a default file name (output.csv)
+    if os.path.isdir(save_path):
+        return os.path.join(save_path, "output.csv")  # Save the result as 'output.csv' in the given directory
+    # If the save_path is already a full file path, just return it
+    return save_path
 
 # Theme Classification Section
 def get_themes(theme_list_str, subtitles_path, save_path):
@@ -11,6 +17,9 @@ def get_themes(theme_list_str, subtitles_path, save_path):
     # Check if the subtitles file exists at the provided path
     if not os.path.exists(subtitles_path):
         return f"Error: Subtitles file does not exist at {subtitles_path}"
+
+    # Handle save path (check if it's a directory, and append 'output.csv' if so)
+    save_path = handle_save_path(save_path)
 
     # Instantiate the theme classifier
     theme_classifier = ThemeClassifier(theme_list)
@@ -29,10 +38,8 @@ def get_themes(theme_list_str, subtitles_path, save_path):
     output_chart = px.bar(output_df, x='Theme', y='Score', title="Series Themes")
     output_chart.update_traces(marker_color='blue')  # Customize the plot if needed
 
-    # Save the output to a file (both Colab and local directory)
-    if save_path:
-        # Save the dataframe as CSV
-        output_df.to_csv(save_path, index=False)
+    # Save the output to the determined path (directory or full file path)
+    output_df.to_csv(save_path, index=False)
 
     return output_chart
 
@@ -52,10 +59,7 @@ def main():
                         subtitles_path = gr.Textbox(label="Subtitles Path", placeholder="Path to the subtitles or script file")
                         
                         # Textbox for save path (user provides where to save the results)
-                        save_path = gr.Textbox(label="Save Path", placeholder="Path to save the result (e.g. ./output.csv or /content/ThemeResults/output.csv)")
-                        
-                        # Add validation for save_path
-                        save_path.change(inputs=[save_path], outputs=[save_path])
+                        save_path = gr.Textbox(label="Save Path", placeholder="Path to save the result (e.g. ./output or /content/ThemeResults/)")
                         
                         get_themes_button = gr.Button("Get Themes")
                         # Train and get output
