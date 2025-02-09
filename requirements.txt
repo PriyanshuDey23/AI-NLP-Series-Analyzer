@@ -16,3 +16,4 @@ torch
 gradio
 matplotlib
 seaborn
+plotly
