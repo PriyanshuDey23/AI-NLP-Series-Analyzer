@@ -10,3 +10,9 @@ trl
 bitsandbytes
 beautifulsoup4
 scrapy
+pandas
+numpy
+torch
+gradio
+matplotlib
+seaborn
