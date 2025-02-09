@@ -1,0 +1,14 @@
+# Subtitle
+dataset_1: https://srtzilla.com/subtitle/naruto-season-1/english/2206507
+
+# Transcript
+# It doesnot containproper thing so we use subtitle dataset
+dataset_2: https://www.kaggle.com/datasets/leonzatrax/naruto-ep-1-transcript
+
+# Multiple ninja attacks
+# scrape the  internet( We will scrape multiple pages from single website)
+# classification dataset( WHat types of ninja attack is this)
+# Extract the title description and classification 
+# Example :- {"jutsu_name": "Adamantine Sealing Chains: Spiral Formation", "jutsu_type": "Hiden, Ninjutsu, F\u016binjutsu, Barrier Ninjutsu, Space\u2013Time Ninjutsu, Cooperation Ninjutsu", "jutsu_description": "Kushina uses her chains to form a barrier while Minato teleports above the opponent and slams them down with a Rasengan."}
+dataset_3: https://naruto.fandom.com/wiki/Special:BrowseData/Jutsu?limit=250&offset=0&_cat=Jutsu
+

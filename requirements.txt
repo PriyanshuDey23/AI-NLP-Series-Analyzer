@@ -1,0 +1,12 @@
+transformers
+huggingface_hub
+nltk
+gradio
+pyvis
+evaluate
+python-dotenv
+# git+https://github.com/huggingface/peft.git
+trl
+bitsandbytes
+beautifulsoup4
+scrapy
