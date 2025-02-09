@@ -4,7 +4,7 @@ from Theme_Classifier import ThemeClassifier
 
 # Theme Classification Section
 def get_themes(theme_list_str,subtitles_path,save_path):
-    theme_list = theme_list_str.split(',') # Theme list
+    theme_list = [theme.strip() for theme in theme_list_str.split(',')] # Theme list
     theme_classifier = ThemeClassifier(theme_list) 
     output_df = theme_classifier.get_themes(subtitles_path,save_path) 
 
