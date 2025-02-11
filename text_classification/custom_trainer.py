@@ -12,8 +12,7 @@ class CustomTrainer(Trainer):
         
         # Forward Pass
         outputs = model(**inputs)
-        logits = outputs.get("logits")
-        logits = logits.float()
+        logits = outputs.get("logits").float()
         
         # Ensure logits and labels are on the same device
         device = self.device if hasattr(self, 'device') else torch.device("cpu")

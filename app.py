@@ -60,13 +60,19 @@ def get_character_network(subtitles_path,ner_path):
     return html
 
 
-def classify_text(text_classifcation_model,text_classifcation_data_path,text_to_classify):
-    jutsu_classifier = JutsuClassifier(model_path = text_classifcation_model,
-                                       data_path = text_classifcation_data_path,
-                                       huggingface_token = os.getenv('huggingface_token'))
+def classify_text(text_classifcation_model, text_classifcation_data_path, text_to_classify):
+    if not text_to_classify:
+        return "Error: No text provided for classification."
+
+    jutsu_classifier = JutsuClassifier(
+        model_path=text_classifcation_model,
+        data_path=text_classifcation_data_path,
+        huggingface_token=os.getenv('huggingface_token')
+    )
     
     output = jutsu_classifier.classify_jutsu(text_to_classify)
-    output = output[0]
+    
+    return output[0] if output else "No classification result."
 
 
 def main():
@@ -112,16 +118,15 @@ def main():
                 gr.HTML("<h1>Text Classification with LLMs</h1>")
                 with gr.Row():
                     with gr.Column():
-                        text_classification_output = gr.Textbox(label="Text Classification Output")
+                        text_classification_output = gr.Textbox(label="Text Classification Output", interactive=False)
                     with gr.Column():
-                        # Input
-                        text_classifcation_model = gr.Textbox(label='Model Path') # Model Path
-                        text_classifcation_data_path = gr.Textbox(label='Data Path') # Data Path
-                        text_to_classify = gr.Textbox(label='Text input') # Text TO classify
-                        classify_text_button = gr.Button("Clasify Text (Jutsu)") # Button
-                        # After clicking the button
-                        classify_text_button.click(classify_text, inputs=[text_classifcation_model,text_classifcation_data_path,text_to_classify], outputs=[text_classification_output])
-
+                        text_classifcation_model = gr.Textbox(label="Model Path")
+                        text_classifcation_data_path = gr.Textbox(label="Data Path")
+                        text_to_classify = gr.Textbox(label="Text Input")
+                        classify_text_button = gr.Button("Classify Text (Jutsu)")
+                        classify_text_button.click(classify_text, 
+                                                   inputs=[text_classifcation_model, text_classifcation_data_path, text_to_classify], 
+                                                   outputs=[text_classification_output])
 
 
 
