@@ -18,3 +18,7 @@ matplotlib
 seaborn
 plotly
 spacy
+datasets
+
+
+
