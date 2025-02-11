@@ -1,5 +1,5 @@
 # Why we are using it
-# Class weights are used to balance the loss function(error function) when dealing with imbalanced datasets.
+# Class weights are used to balance the loss function (error function) when dealing with imbalanced datasets.
 
 from sklearn.utils.class_weight import compute_class_weight
 import numpy as np
@@ -19,12 +19,13 @@ def compute_metrics(eval_pred):
 # This function computes the class weights for a given dataset.
 def get_class_weights(df):
     # Ensure the labels are numeric (int type) and get class weights
+    class_labels = np.array(sorted(df['label'].unique()))  # Convert to NumPy array
     class_weights = compute_class_weight(
-        "balanced",
-        classes=sorted(df['label'].unique().tolist()),  # Sort to match class order
-        y=df['label'].tolist()
+        class_weight="balanced",
+        classes=class_labels,  # NumPy array (correct type)
+        y=df['label'].values   # Ensure y is an array, not a list
     )
     
-    # Convert class weights to a PyTorch tensor if needed for model loss function
-    class_weights_tensor = torch.tensor(class_weights, dtype=torch.float)
+    # Convert class weights to a PyTorch tensor
+    class_weights_tensor = torch.tensor(class_weights, dtype=torch.float, requires_grad=False)
     return class_weights_tensor
