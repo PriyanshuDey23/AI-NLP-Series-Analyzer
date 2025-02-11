@@ -1,3 +1,5 @@
+import os
+import gc
 import pandas as pd
 import torch
 import huggingface_hub
@@ -10,11 +12,13 @@ from transformers import (AutoTokenizer,
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from datasets import Dataset
-import gc
 from .cleaner import Cleaner
 from .training_utils import get_class_weights, compute_metrics
 from .custom_trainer import CustomTrainer
 from huggingface_hub import model_info
+
+# Disable Weights & Biases tracking if not needed
+os.environ["WANDB_DISABLED"] = "true"
 
 # Function to check if a model exists on Hugging Face Hub
 def repo_exists(model_path):
@@ -72,21 +76,23 @@ class JutsuClassifier():
     def train_model(self, train_data, test_data, class_weights):
         model = AutoModelForSequenceClassification.from_pretrained(
             self.model_name, 
-            num_labels=self.num_labels
+            num_labels=self.num_labels,
+            ignore_mismatched_sizes=True  # Avoids weight mismatch warnings
         )
         
-        class_weights = torch.tensor(class_weights).to(self.device)
+        class_weights = torch.tensor(class_weights).clone().detach().to(self.device)  # Fixed tensor warning
         
         data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
         
         training_args = TrainingArguments(
             output_dir=self.model_path,
+            run_name="jutsu_classifier_run",  # Explicitly set run_name to prevent W&B warning
             learning_rate=2e-4,
             per_device_train_batch_size=8,
             per_device_eval_batch_size=8,
             num_train_epochs=5,
             weight_decay=0.01,
-            evaluation_strategy="epoch",
+            eval_strategy="epoch",  # Updated from `evaluation_strategy`
             logging_strategy="epoch",
             push_to_hub=True,
         )
